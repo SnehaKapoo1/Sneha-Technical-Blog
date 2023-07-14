@@ -6,6 +6,11 @@
 
 
 
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.tech.blog.entities.Category"%>
+<%@page import="com.tech.blog.dao.PostDao"%>
+<%@page import="com.tech.blog.helper.ConnectionProvider"%>
+<%@page import="com.tech.blog.entities.Message"%>
 <%@page import="com.tech.blog.entities.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page errorPage="error_page.jsp" %>
@@ -69,6 +74,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#"> <span class="fa fa-address-book-o"></span> Contact</a>
                     </li>
+
+                    <!--************Button Start trigger post modal********-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-toggle="modal" data-target="#add-post-modal"> <span class="fa fa-asterisk"></span> Do Post</a>
+                    </li>
+                    <!--************Button End for post model********-->
                 </ul>
 
                 <ul class="navbar-nav mr-right">
@@ -88,8 +99,21 @@
 
         <!--************end of the navbar**********-->
 
-        <!--profile modal-->
+        <%
+            Message m = (Message) session.getAttribute("msg");
+            if (m != null) {
+        %>
+        <div class="alert <%= m.getCssClass()%>" role="alert">
 
+            <%= m.getMessageContent()%>
+
+        </div>
+        <%
+                session.removeAttribute("msg");
+            }
+        %>
+
+        <!--profile modal-->
 
         <!-- Modal -->
         <div class="modal fade" id="profile-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -104,9 +128,8 @@
                     <div class="modal-body">
 
                         <div class="container text-center">
-                            <img src="pics/ <%= user.getProfile()%>">
-                            <%= user.getProfile()%>
-                            <h5 class="modal-title" id="body"> <%= user.getName()%> </h5>
+                            <img src="pictures/<%= user.getProfile()%>" class="img-fluid" style="border-radius: 50%; max-width: 150px;">
+                            <h5 class="modal-title mt-3" id="exampleModalLabel"> <%= user.getName()%> </h5>
 
                             <!--user details-->
 
@@ -150,11 +173,12 @@
                             <div id="profile-edit" style="display: none">
                                 <h3 class="mt-2">Please Edit Carefully</h3>
 
-                                <form action="EditServlet" method="POST">
+                                <!--enctype attribute because of file uploading or audio or video or image-->
+                                <form action="EditServlet" method="POST" enctype="multipart/form-data">
 
                                     <table class="table">
 
-                                       <tr>
+                                        <tr>
                                             <td>ID :</td>
                                             <td><%= user.getId()%></td>
                                         </tr>
@@ -182,7 +206,7 @@
                                         <tr>
                                             <td>About :</td>
                                             <td>
-                                                <textarea rows="3" class="form-control" name="user-about" >
+                                                <textarea rows="3" class="form-control" name="user_about" >
                                                     <%= user.getAbout()%>
                                                 </textarea>
                                             </td>
@@ -215,6 +239,68 @@
             </div>
         </div>
 
+        <!--******END OF THE PROFILE MODAL********-->
+
+
+        <!--******START OF POST MODAL*******-->
+        <!-- Modal -->
+        <div class="modal fade" id="add-post-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Provide the post details...</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form action="AddPostServlet" method="post">
+                            <div class="form-group">
+                                <select class="form-control">
+                                    <option selected disabled>---select Category---</option>
+
+                                    <%
+                                        PostDao postD = new PostDao(ConnectionProvider.getConnection());
+                                        ArrayList<Category> list = postD.getAllCategories();
+                                        for (Category c : list) {
+                                    %>
+                                    <option> <%= c.getName() %></option>
+                                    <%
+                                        }
+                                    %>
+
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class= "form-control" name="post-title" placeholder="Enter post title">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" style="height: 200px" placeholder="Enter your content"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" style="height: 200px" placeholder="Enter your program (if any)"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Select your pic :</label>
+                                <br>
+                                <input type="file">
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--******END OF POST MODAL*******-->
 
         <!--javascript-->
         <script
