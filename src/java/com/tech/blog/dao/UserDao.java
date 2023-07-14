@@ -15,6 +15,7 @@ public class UserDao {
         this.con = con;
     }
     
+    // ********For new Entry ----> Registeration****************************
     public boolean saveUser(User user) {
         
         boolean b = false;
@@ -79,5 +80,32 @@ public class UserDao {
         }
         
         return user;
+    }
+    
+    //********Edited Data from user to update the profile****************
+    
+    public boolean updateUser(User user){
+        
+        boolean f = false;
+        try{
+            
+            String query = "Update user set name = ?,  email = ?, password = ?, gender = ?,  about = ?, profile = ? where id = ? ";
+            PreparedStatement p = con.prepareStatement(query);
+            p.setString(1, user.getName());
+            p.setString(2, user.getEmail());
+            p.setString(3, user.getPassword());
+            p.setString(4, user.getGender());
+            p.setString(5, user.getAbout());
+            p.setString(6, user.getProfile());
+            p.setInt(7, user.getId());
+            
+            p.executeUpdate();
+            f = true;
+            
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return f;
     }
 }
