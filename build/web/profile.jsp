@@ -113,6 +113,50 @@
             }
         %>
 
+        <!--*********start main body of the page********-->
+
+        <main>
+            <div class="container">
+                <div class="row mt-4">
+                    <!--**First column**-->
+                    <div class="col-md-4">
+                        <!--********** showing list of categories in body *********-->
+
+                        <div class="list-group">
+                            <a href="#" onclick="getPosts(0)" class="list-group-item list-group-item-action active">
+                                All Posts
+                            </a>
+
+                            <!--Showing all categories through java--> 
+                            <%
+                                PostDao d = new PostDao(ConnectionProvider.getConnection());
+                                ArrayList<Category> list2 = d.getAllCategories();
+                                for (Category cc : list2) {
+                            %>
+                            <a href="#" onclick="getPosts(<%= cc.getCid() %>)" class="list-group-item list-group-item-action"> <%= cc.getName()%></a>
+                            <%
+                                }
+                            %>
+                        </div>
+                    </div> 
+
+                    <!--************* Second column**********-->
+                    <div  class="col-md-8">
+                        <!--showing post dynamically-->
+
+                        <div id= "loader" class="container text-center">
+                            <i class="fa fa-refresh fa-4x fa-spin"></i>
+                            <h3 class="mt-2">Loading...</h3>
+                        </div>
+                        
+                         <div id= "post-container" class="container"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!--end main body of the page-->
+
         <!--profile modal-->
 
         <!-- Modal -->
@@ -231,6 +275,8 @@
                         </div>
 
                     </div>
+
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button id="edit-profile-button" type="button" class="btn btn-primary secondary-background">Edit</button>
@@ -255,17 +301,17 @@
                     </div>
                     <div class="modal-body">
 
-                        <form action="AddPostServlet" method="post">
+                        <form id = "add-post-form" action="AddPostServlet" method="post">
                             <div class="form-group">
-                                <select class="form-control">
+                                <select class="form-control" name="cid">
                                     <option selected disabled>---select Category---</option>
 
                                     <%
                                         PostDao postD = new PostDao(ConnectionProvider.getConnection());
-                                        ArrayList<Category> list = postD.getAllCategories();
-                                        for (Category c : list) {
+                                        ArrayList<Category> list1 = postD.getAllCategories();
+                                        for (Category c : list1) {
                                     %>
-                                    <option> <%= c.getName() %></option>
+                                    <option value="<%= c.getCid()%>"> <%= c.getName()%></option>
                                     <%
                                         }
                                     %>
@@ -274,26 +320,29 @@
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class= "form-control" name="post-title" placeholder="Enter post title">
+                                <input type="text" class= "form-control" name="post_title" placeholder="Enter post title">
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control" style="height: 200px" placeholder="Enter your content"></textarea>
+                                <textarea class="form-control" style="height: 200px" name="post_content" placeholder="Enter your content"></textarea>
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control" style="height: 200px" placeholder="Enter your program (if any)"></textarea>
+                                <textarea class="form-control" style="height: 200px" name="post_code" placeholder="Enter your program (if any)"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Select your pic :</label>
                                 <br>
-                                <input type="file">
+                                <input type="file" name ="post_pic">
+                            </div>
+
+                            <div class="container text-center">
+
+                                <button type="submit" class="btn btn-outline-primary">Post</button>
+
                             </div>
                         </form>
 
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -307,9 +356,11 @@
             src="https://code.jquery.com/jquery-3.7.0.min.js"
             integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
         crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script src="js/myjs.js" type="text/javascript"></script>
+
 
         <!--JQuery-->
         <script>
@@ -332,6 +383,73 @@
                         $(this).text("Edit");
                     }
                 });
+            });
+        </script>
+
+        <!--now add post Javascript-->
+
+        <script>
+            $(document).ready(function (e) {
+
+                $("#add-post-form").on("submit", function (event) {
+                    //this code gets called when form is submitted
+                    event.preventDefault(); //stops normal behaviour of form 
+
+                    console.log("you have submitted");
+                    let form = new FormData(this);
+
+                    //sending form data to servlet through ajax
+                    $.ajax({
+
+                        url: "AddPostServlet",
+                        type: 'POST',
+                        data: form,
+                        success: function (data, textStatus, jqXHR) {
+                            //success
+
+                            console.log(data);
+
+                            if (data.trim() === 'DONE') {
+                                swal("Good job!", "saved successfully", "success");
+                            } else {
+                                swal("Error!", "something went wrong", "error");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //error
+                            swal("Error!", "something went wrong", "error");
+                        },
+
+                        processData: false,
+                        contentType: false
+
+                    });
+
+                });
+            });
+        </script>    
+
+        <!--loading post using ajax-->
+        <script>
+            
+            function getPosts(catId){
+                $("#loader").show();
+                $("#post-container").hide();
+                
+                 $.ajax({
+                   url: "load_post.jsp",
+                   data: {cid: catId},
+                   success: function (data, textStatus, jqXHR) {
+                        console.log(data);
+                        $("#loader").hide();
+                        $("#post-container").show();
+                        $("#post-container").html(data);
+                    }
+               });
+            }
+            
+            $(document).ready(function(e){
+              getPosts(0);
             });
         </script>
 
