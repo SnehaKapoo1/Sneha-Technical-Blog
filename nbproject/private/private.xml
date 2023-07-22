@@ -4,13 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/dao/PostDao.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/entities/Post.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/entities/Category.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/helper/Helper.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/servlets/AddPostServlet.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/entities/User.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/src/java/com/tech/blog/servlets/EditServlet.java</file>
-            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/web/register_page.jsp</file>
+            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/web/profile.jsp</file>
+            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/web/show_blog_page.jsp</file>
+            <file>file:/D:/NetBeansProjects/AdvanceJavaFirstTechBlogProject/TechBlog/web/load_post.jsp</file>
         </group>
     </open-files>
 </project-private>

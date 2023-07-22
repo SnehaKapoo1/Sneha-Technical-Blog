@@ -15,7 +15,7 @@ public class UserDao {
         this.con = con;
     }
     
-    // ********For new Entry ----> Registeration****************************
+    // ********For new Entry ----> Registeration******
     public boolean saveUser(User user) {
         
         boolean b = false;
@@ -107,5 +107,40 @@ public class UserDao {
             e.printStackTrace();
         }
         return f;
+    }
+    
+    public User getUserbyUserId(int userId){
+        
+        User user = null;
+        String query = "select * from user where id=?";
+        
+        try{
+        
+            PreparedStatement p = this.con.prepareStatement(query);
+            p.setInt(1, userId);
+            
+            ResultSet set = p.executeQuery();
+            if(set.next()){
+              user = new User();
+
+                //data from database
+                String name = set.getString("name");
+
+                //set to user object
+                user.setName(name);
+               
+                user.setId(set.getInt("id"));
+                user.setEmail(set.getString("email"));
+                user.setPassword(set.getString("password"));
+                user.setGender(set.getString("gender"));
+                user.setAbout(set.getString("about"));
+                user.setDateTime(set.getTimestamp("rdate"));
+                user.setProfile(set.getString("profile"));
+            }
+            
+        }catch(SQLException e) {    
+            e.printStackTrace();
+        }      
+        return user;
     }
 }

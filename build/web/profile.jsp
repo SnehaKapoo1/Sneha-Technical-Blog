@@ -15,6 +15,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page errorPage="error_page.jsp" %>
 
+<!--validation for checking user login or not-->
 <%
 
     User user = (User) session.getAttribute("currentUser");
@@ -40,14 +41,18 @@
             .banner-background{
                 clip-path: polygon(0% 15%, 0 0, 15% 0%, 85% 0%, 100% 0, 100% 15%, 100% 93%, 89% 100%, 71% 96%, 43% 100%, 21% 96%, 0 100%);
             }
+
+            body{
+                background: url(img/bg.png);
+                background-size: cover;
+                background-attachment: fixed;
+            }
         </style>
 
     </head>
     <body>
 
         <!--************navbar****************-->
-
-
         <nav class="navbar navbar-expand-lg navbar-dark primary-background">
             <a class="navbar-brand" style="color: #EF5350" href="index.jsp"> <span class="fa fa-asterisk"></span> Tech Blog</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +62,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link"  style="color: #EF5350" href="#"> <span class="fa fa-user-circle-o"></span> Learn code with sneha <span class="sr-only">(current)</span></a>
+                        <a class="nav-link"  style="color: #EF5350" href="profile.jsp"> <span class="fa fa-user-circle-o"></span> LearnCode with Sneha <span class="sr-only">(current)</span></a>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -93,10 +98,6 @@
                 </ul>
             </div>
         </nav>
-
-
-
-
         <!--************end of the navbar**********-->
 
         <%
@@ -104,26 +105,24 @@
             if (m != null) {
         %>
         <div class="alert <%= m.getCssClass()%>" role="alert">
-
             <%= m.getMessageContent()%>
-
         </div>
         <%
                 session.removeAttribute("msg");
             }
         %>
 
-        <!--*********start main body of the page********-->
-
+        <!--start main body of the page********-->
         <main>
             <div class="container">
                 <div class="row mt-4">
                     <!--**First column**-->
                     <div class="col-md-4">
                         <!--********** showing list of categories in body *********-->
+                        <!--c-link used for making click activation-->
 
                         <div class="list-group">
-                            <a href="#" onclick="getPosts(0)" class="list-group-item list-group-item-action active">
+                            <a href="#" onclick="getPosts(0, this)" class=" c-link list-group-item list-group-item-action active ">
                                 All Posts
                             </a>
 
@@ -133,7 +132,7 @@
                                 ArrayList<Category> list2 = d.getAllCategories();
                                 for (Category cc : list2) {
                             %>
-                            <a href="#" onclick="getPosts(<%= cc.getCid() %>)" class="list-group-item list-group-item-action"> <%= cc.getName()%></a>
+                            <a href="#" onclick="getPosts(<%= cc.getCid()%>, this)" class=" c-link list-group-item list-group-item-action"> <%= cc.getName()%></a>
                             <%
                                 }
                             %>
@@ -148,18 +147,16 @@
                             <i class="fa fa-refresh fa-4x fa-spin"></i>
                             <h3 class="mt-2">Loading...</h3>
                         </div>
-                        
-                         <div id= "post-container" class="container"></div>
+
+                        <div id= "post-container" class="container"></div>
                     </div>
                 </div>
             </div>
         </main>
-
         <!--end main body of the page-->
 
         <!--profile modal-->
-
-        <!-- Modal -->
+        <!-- Start of the Modal -->
         <div class="modal fade" id="profile-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -284,11 +281,9 @@
                 </div>
             </div>
         </div>
+        <!--END OF THE PROFILE MODAL-->
 
-        <!--******END OF THE PROFILE MODAL********-->
-
-
-        <!--******START OF POST MODAL*******-->
+        <!--******START OF POST MODAL-->
         <!-- Modal -->
         <div class="modal fade" id="add-post-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -347,8 +342,6 @@
             </div>
         </div>
 
-
-
         <!--******END OF POST MODAL*******-->
 
         <!--javascript-->
@@ -364,26 +357,26 @@
 
         <!--JQuery-->
         <script>
-            $(document).ready(function () {
-                //variable
-                let editStatus = false;
+                                $(document).ready(function () {
+                                    //variable
+                                    let editStatus = false;
 
-                $("#edit-profile-button").click(function () {
-                    //  alert("button clicked");
-                    if (editStatus === false) {
+                                    $("#edit-profile-button").click(function () {
+                                        //  alert("button clicked");
+                                        if (editStatus === false) {
 
-                        $("#profile-details").hide();
-                        $("#profile-edit").show();
-                        $(this).text("Back");
-                        editStatus = true;
-                    } else {
+                                            $("#profile-details").hide();
+                                            $("#profile-edit").show();
+                                            $(this).text("Back");
+                                            editStatus = true;
+                                        } else {
 
-                        $("#profile-details").show();
-                        $("#profile-edit").hide();
-                        $(this).text("Edit");
-                    }
-                });
-            });
+                                            $("#profile-details").show();
+                                            $("#profile-edit").hide();
+                                            $(this).text("Edit");
+                                        }
+                                    });
+                                });
         </script>
 
         <!--now add post Javascript-->
@@ -431,25 +424,28 @@
 
         <!--loading post using ajax-->
         <script>
-            
-            function getPosts(catId){
+//temp is the refrence variable that u have clicked in all posts, java pr.....
+            function getPosts(catId, temp) {
                 $("#loader").show();
                 $("#post-container").hide();
-                
-                 $.ajax({
-                   url: "load_post.jsp",
-                   data: {cid: catId},
-                   success: function (data, textStatus, jqXHR) {
+                $(".c-link").removeClass('active');
+
+                $.ajax({
+                    url: "load_post.jsp",
+                    data: {cid: catId},
+                    success: function (data, textStatus, jqXHR) {
                         console.log(data);
                         $("#loader").hide();
                         $("#post-container").show();
                         $("#post-container").html(data);
+                        $(temp).addClass('active');
                     }
-               });
+                });
             }
-            
-            $(document).ready(function(e){
-              getPosts(0);
+
+            $(document).ready(function (e) {
+                let allPostRef = $('.c-link')[0];
+                getPosts(0, allPostRef);
             });
         </script>
 
